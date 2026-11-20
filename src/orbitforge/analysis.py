@@ -27,7 +27,7 @@ class SimulationAnalysis:
     angular_momenta: np.ndarray
     relative_energy_drift: np.ndarray
 
-    
+
     def __post_init__(self) -> None:
         """Validate, copy and protect diagnostic arrays."""
 
@@ -54,8 +54,13 @@ class SimulationAnalysis:
             raise ValueError("times must be a non-empty one-dimensional array")
         if np.any(np.diff(self.times) <= 0):
             raise ValueError("times must be strictly increasing")
-        
+
         n_snapshots = len(self.times)
+
+        if self.total_energies[0] == 0.0:
+            raise ValueError(
+                "relative energy drift is undefined when initial energy is zero"
+            )
 
         scalar_series = (
             "kinetic_energies",
@@ -69,6 +74,36 @@ class SimulationAnalysis:
                 raise ValueError(
                     f"{name} must have shape ({n_snapshots},)"
                 )
+
+        expected_total_energy = (
+            self.kinetic_energies + self.potential_energies
+        )
+
+        if not np.allclose(
+            self.total_energies,
+            expected_total_energy,
+            rtol=1e-10,
+            atol=1e-12,
+        ):
+            raise ValueError(
+                "total_energies must equal kinetic_energies "
+                "+ potential_energies"
+            )
+
+        expected_energy_drift = (
+            self.total_energies - self.total_energies[0]
+        ) / abs(self.total_energies[0])
+
+        if not np.allclose(
+            self.relative_energy_drift,
+            expected_energy_drift,
+            rtol=1e-10,
+            atol=1e-12,
+        ):
+            raise ValueError(
+                "relative_energy_drift must match the drift "
+                "calculated from total_energies"
+            )
 
         if self.linear_momenta.ndim != 2:
             raise ValueError("linear_momenta must be a two-dimensional array")

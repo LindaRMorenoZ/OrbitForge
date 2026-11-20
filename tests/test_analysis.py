@@ -407,3 +407,32 @@ def test_analysis_rejects_duplicate_times():
             angular_momenta=analysis.angular_momenta,
             relative_energy_drift=analysis.relative_energy_drift,
         )
+def test_analysis_rejects_inconsistent_total_energy():
+    with pytest.raises(
+        ValueError,
+        match="total_energies must equal",
+    ):
+        SimulationAnalysis(
+            times=np.array([0.0, 1.0]),
+            kinetic_energies=np.array([5.0, 5.0]),
+            potential_energies=np.array([-1.0, -2.0]),
+            total_energies=np.array([4.0, 4.0]),
+            linear_momenta=np.zeros((2, 2)),
+            angular_momenta=np.zeros((2, 1)),
+            relative_energy_drift=np.array([0.0, 0.0]),
+        )
+
+def test_analysis_rejects_inconsistent_relative_energy_drift():
+    with pytest.raises(
+        ValueError,
+        match="relative_energy_drift must match",
+    ):
+        SimulationAnalysis(
+            times=np.array([0.0, 1.0]),
+            kinetic_energies=np.array([5.0, 5.0]),
+            potential_energies=np.array([-1.0, -2.0]),
+            total_energies=np.array([4.0, 3.0]),
+            linear_momenta=np.zeros((2, 2)),
+            angular_momenta=np.zeros((2, 1)),
+            relative_energy_drift=np.array([0.0, 0.5]),
+        )

@@ -2,6 +2,8 @@
 """Quantitative conservation metrics for N-body simulations."""
 
 from dataclasses import dataclass
+import math
+from numbers import Real
 
 import numpy as np
 
@@ -18,6 +20,55 @@ class ConservationMetrics:
     max_relative_linear_momentum_drift: float | None
     max_absolute_angular_momentum_drift: float
     max_relative_angular_momentum_drift: float | None
+
+    def __post_init__(self) -> None:
+        """Validate all conservation metrics."""
+
+        required_fields = (
+            "max_absolute_energy_drift",
+            "max_relative_energy_drift",
+            "max_absolute_linear_momentum_drift",
+            "max_absolute_angular_momentum_drift",
+        )
+
+        optional_fields = (
+            "max_relative_linear_momentum_drift",
+            "max_relative_angular_momentum_drift",
+        )
+
+        for field_name in required_fields + optional_fields:
+            value = getattr(self, field_name)
+
+            if value is None:
+                if field_name in optional_fields:
+                    continue
+
+                raise TypeError(
+                    f"{field_name} cannot be None"
+                )
+
+            if isinstance(value, bool) or not isinstance(value, Real):
+                raise TypeError(
+                    f"{field_name} must be a real number"
+                )
+
+            numeric_value = float(value)
+
+            if not math.isfinite(numeric_value):
+                raise ValueError(
+                    f"{field_name} must be finite"
+                )
+
+            if numeric_value < 0.0:
+                raise ValueError(
+                    f"{field_name} cannot be negative"
+                )
+
+            object.__setattr__(
+                self,
+                field_name,
+                numeric_value,
+            )
 
     @classmethod
     def from_analysis(

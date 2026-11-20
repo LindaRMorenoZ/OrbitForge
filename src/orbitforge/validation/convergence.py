@@ -10,7 +10,7 @@ from ..simulation import Simulation
 from ..state import SystemState
 
 
-@dataclass
+@dataclass(frozen=True)
 class ConvergenceResult:
     """Results from simulations performed with different time steps."""
 
@@ -19,6 +19,67 @@ class ConvergenceResult:
     energy_drift: np.ndarray
     angular_momentum_drift: np.ndarray
     observed_order: np.ndarray
+
+    def __post_init__(self) -> None:
+        """Validate, copy and protect convergence result arrays."""
+
+        array_names = (
+            "dt",
+            "position_error",
+            "energy_drift",
+            "angular_momentum_drift",
+            "observed_order",
+        )
+
+        for name in array_names:
+            array = np.array(
+                getattr(self, name),
+                dtype=float,
+                copy=True,
+            )
+
+            if array.ndim != 1:
+                raise ValueError(
+                    f"{name} must be a one-dimensional array"
+                )
+
+            if name == "observed_order":
+                if np.any(np.isinf(array)):
+                    raise ValueError(
+                        "observed_order cannot contain infinite values"
+                    )
+            elif not np.all(np.isfinite(array)):
+                raise ValueError(
+                    f"{name} must contain only finite values"
+                )
+
+            if name == "dt" and np.any(array <= 0.0):
+                raise ValueError("dt must contain only positive values")
+
+            if name != "dt" and name != "observed_order":
+                if np.any(array < 0.0):
+                    raise ValueError(
+                        f"{name} cannot contain negative values"
+                    )
+
+            array.setflags(write=False)
+            object.__setattr__(self, name, array)
+
+        if len(self.dt) == 0:
+            raise ValueError("convergence results cannot be empty")
+
+        expected_shape = self.dt.shape
+
+        for name in array_names[1:]:
+            if getattr(self, name).shape != expected_shape:
+                raise ValueError(
+                    f"{name} must have the same shape as dt"
+                )
+
+        if np.any(np.diff(self.dt) >= 0.0):
+            raise ValueError(
+                "dt must be strictly decreasing"
+            )
 
 
 def _relative_vector_error(final: np.ndarray, reference: np.ndarray) -> float:
@@ -71,6 +132,15 @@ def run_convergence_test(
                 f"duration ({duration}) must be an integer multiple of dt ({dt})"
             )
 
+    initial_energy = total_energy(
+        initial_state, gravitational_constant, softening
+    )
+
+    if initial_energy == 0.0:
+        raise ValueError(
+            "relative energy drift is undefined when initial energy is zero"
+        )
+
     reference_dt = ordered_steps[-1] / reference_factor
     reference_steps = round(duration / reference_dt)
 
@@ -81,12 +151,7 @@ def run_convergence_test(
     ).run(reference_steps, reference_dt)
 
     reference_positions = reference.final_state.positions
-
-    initial_energy = total_energy(
-        initial_state, gravitational_constant, softening
-    )
     initial_angular_momentum = angular_momentum(initial_state)
-
     position_errors = []
     energy_drifts = []
     angular_momentum_drifts = []
