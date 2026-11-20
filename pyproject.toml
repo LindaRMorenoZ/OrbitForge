@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbitforge"
+version = "0.1.0"
+description = "A small, modular toolkit for deterministic Newtonian N-body experiments."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "OrbitForge contributors"}]
+dependencies = ["numpy>=1.23"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
