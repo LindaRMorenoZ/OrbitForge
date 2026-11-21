@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..simulation import Simulation
 from ..state import Body, SystemState
 from ..units import UnitSystem
-from ..simulation import Simulation
 
 
 class SystemBuilder:

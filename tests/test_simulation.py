@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from orbitforge import Body, Simulation, SystemState, linear_momentum, total_energy
+from orbitforge import Body, Simulation, SystemState, linear_momentum
 from orbitforge.config import SimulationConfig
 
 

@@ -1,7 +1,7 @@
 """Configuration settings for N-body simulations."""
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)

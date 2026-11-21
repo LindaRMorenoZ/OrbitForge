@@ -56,11 +56,10 @@ class ConvergenceResult:
             if name == "dt" and np.any(array <= 0.0):
                 raise ValueError("dt must contain only positive values")
 
-            if name != "dt" and name != "observed_order":
-                if np.any(array < 0.0):
-                    raise ValueError(
-                        f"{name} cannot contain negative values"
-                    )
+            if name != "dt" and name != "observed_order" and np.any(array < 0.0):
+                raise ValueError(
+                    f"{name} cannot contain negative values"
+            )
 
             array.setflags(write=False)
             object.__setattr__(self, name, array)
@@ -119,7 +118,7 @@ def run_convergence_test(
 
     if isinstance(reference_factor, bool) or not isinstance(reference_factor, int):
         raise ValueError("reference_factor must be an integer")
-
+    
     if reference_factor < 2:
         raise ValueError("reference_factor must be at least 2")
 

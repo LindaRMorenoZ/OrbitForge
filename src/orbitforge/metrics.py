@@ -1,8 +1,8 @@
 
 """Quantitative conservation metrics for N-body simulations."""
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from numbers import Real
 
 import numpy as np

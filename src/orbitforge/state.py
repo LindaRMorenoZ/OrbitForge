@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -51,7 +52,7 @@ class SystemState:
     def from_bodies(
         cls, bodies: list[Body] | tuple[Body, ...], velocities: FloatArray,
         time: float = 0.0,
-    ) -> "SystemState":
+    ) -> SystemState:
         if not bodies:
             raise ValueError("at least one body is required")
         dimensions = {body.position.size for body in bodies}
@@ -91,7 +92,7 @@ class SystemState:
         if not np.isfinite(self.time):
             raise ValueError("time must be finite")
 
-    def copy(self) -> "SystemState":
+    def copy(self) -> SystemState:
         return SystemState(
             self.names, self.masses.copy(), self.positions.copy(),
             self.velocities.copy(), self.time,

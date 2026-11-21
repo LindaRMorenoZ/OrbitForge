@@ -1,14 +1,13 @@
 """High-level deterministic simulation runner."""
 from dataclasses import dataclass
+
 import numpy as np
 
+from .config import SimulationConfig
 from .diagnostics import total_energy
 from .gravity import accelerations
 from .integrators import velocity_verlet
 from .state import SystemState
-from .config import SimulationConfig
-
-
 
 
 @dataclass

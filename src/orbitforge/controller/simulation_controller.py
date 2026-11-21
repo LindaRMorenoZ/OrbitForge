@@ -1,10 +1,10 @@
 """Controller for interactive N-body simulations."""
-import numpy as np
-
-from ..diagnostics import total_energy
 from enum import Enum, auto
 
+import numpy as np
+
 from ..config import SimulationConfig
+from ..diagnostics import total_energy
 from ..simulation import Simulation, SimulationResult
 from ..state import SystemState
 

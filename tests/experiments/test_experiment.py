@@ -1,11 +1,11 @@
 import numpy as np
 import pytest
 
+from orbitforge.analysis import SimulationAnalysis
 from orbitforge.builder import SystemBuilder
 from orbitforge.config import SimulationConfig
 from orbitforge.experiments import Experiment
 from orbitforge.simulation import SimulationResult
-from orbitforge.analysis import SimulationAnalysis
 
 
 def make_builder():
@@ -227,6 +227,7 @@ def test_metrics_initially_none():
     assert experiment.metrics is None
 from orbitforge.units import ASTRONOMICAL_UNITS, SI_UNITS
 
+
 @pytest.mark.parametrize(
     "unit_system",
     [ASTRONOMICAL_UNITS, SI_UNITS],
@@ -303,6 +304,7 @@ from orbitforge.controller import (
     ControllerStatus,
     SimulationController,
 )
+
 
 def test_create_controller_returns_simulation_controller():
     experiment = Experiment(

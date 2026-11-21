@@ -5,7 +5,6 @@ import pytest
 from orbitforge.builder.system_builder import SystemBuilder
 
 
-
 def test_build_two_body_system():
     builder = SystemBuilder(dimensions=2)
 

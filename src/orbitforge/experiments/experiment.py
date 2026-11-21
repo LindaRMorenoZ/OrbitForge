@@ -9,6 +9,7 @@ from orbitforge.controller import SimulationController
 from orbitforge.metrics import ConservationMetrics
 from orbitforge.simulation import Simulation, SimulationResult
 
+
 class Experiment:
     """A reproducible computational experiment."""
 

@@ -1,5 +1,6 @@
 """Run a reproducible two-body orbit demo."""
 import argparse
+
 import numpy as np
 
 from .simulation import Simulation

@@ -8,6 +8,7 @@ from orbitforge.validation.convergence import (
     run_convergence_test,
 )
 
+
 def circular_binary():
     bodies = [
         Body("a", 1.0, np.array([-0.5, 0.0])),

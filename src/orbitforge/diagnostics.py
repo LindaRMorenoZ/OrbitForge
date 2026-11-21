@@ -1,5 +1,6 @@
 """Conserved-quantity diagnostics for Newtonian systems."""
 import numpy as np
+
 from .state import SystemState
 
 

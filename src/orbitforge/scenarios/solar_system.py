@@ -13,7 +13,6 @@ import numpy as np
 
 from ..state import SystemState
 
-
 G_AU = 4.0 * np.pi**2
 SOLAR_MASS_KG = 1.98847e30
 

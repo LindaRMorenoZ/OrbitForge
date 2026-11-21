@@ -2,6 +2,7 @@
 import numpy as np
 import pytest
 
+from orbitforge.builder import SystemBuilder
 from orbitforge.config import SimulationConfig
 from orbitforge.controller.simulation_controller import (
     ControllerStatus,
@@ -9,7 +10,6 @@ from orbitforge.controller.simulation_controller import (
 )
 from orbitforge.simulation import Simulation
 from orbitforge.state import SystemState
-from orbitforge.builder import SystemBuilder
 
 
 def make_controller(save_every=1):

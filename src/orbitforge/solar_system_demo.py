@@ -28,7 +28,7 @@ def main():
     # Load the predefined, immutable reference scenario.
     initial_state = build_solar_system()
 
-    steps = int(round(args.years / args.dt))
+    steps = round(args.years / args.dt)
     save_every = 1
 
     print("Running the fixed Solar System simulation...")
