@@ -1,4 +1,3 @@
-
 """Tools for constructing custom N-body systems."""
 
 from __future__ import annotations
@@ -41,6 +40,11 @@ class SystemBuilder:
     def bodies(self) -> tuple[Body, ...]:
         return tuple(self._bodies)
 
+    @property
+    def velocities(self) -> tuple[np.ndarray, ...]:
+        """Return independent copies of body velocities."""
+        return tuple(velocity.copy() for velocity in self._velocities)
+
     def add_body(
         self,
         name: str,
@@ -77,7 +81,6 @@ class SystemBuilder:
 
         self._bodies.append(body)
         self._velocities.append(velocity_array.copy())
-
 
     def update_body(
         self,
@@ -142,7 +145,6 @@ class SystemBuilder:
                 return
 
         raise ValueError(f"body not found: {name}")
-
 
     def remove_body(self, name: str) -> None:
         """Remove a body by name."""

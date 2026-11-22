@@ -233,3 +233,29 @@ def test_create_simulation_uses_initial_time():
     simulation = builder.create_simulation(time=5.0)
 
     assert simulation.initial_state.time == pytest.approx(5.0)
+
+
+def test_builder_exposes_body_velocities():
+    builder = SystemBuilder(dimensions=2)
+
+    builder.add_body("Earth", 1.0, [1, 0], [0, 2])
+    builder.add_body("Mars", 0.5, [2, 0], [0, 1])
+
+    velocities = builder.velocities
+
+    assert len(velocities) == 2
+    np.testing.assert_allclose(velocities[0], [0, 2])
+    np.testing.assert_allclose(velocities[1], [0, 1])
+
+
+def test_builder_velocities_are_independent_copies():
+    builder = SystemBuilder(dimensions=2)
+    builder.add_body("Earth", 1.0, [1, 0], [0, 2])
+
+    velocities = builder.velocities
+    velocities[0][1] = 100.0
+
+    np.testing.assert_allclose(
+        builder.build().velocities,
+        [[0, 2]],
+    )
