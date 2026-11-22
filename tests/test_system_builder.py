@@ -259,3 +259,42 @@ def test_builder_velocities_are_independent_copies():
         builder.build().velocities,
         [[0, 2]],
     )
+
+
+def test_builder_exposes_complete_body_data():
+    builder = SystemBuilder(dimensions=2)
+
+    builder.add_body("Earth", 1.0, [1, 0], [0, 2])
+    builder.add_body("Mars", 0.5, [2, 0], [0, 1])
+
+    data = builder.body_data
+
+    assert len(data) == 2
+
+    assert data[0]["name"] == "Earth"
+    assert data[0]["mass"] == pytest.approx(1.0)
+    np.testing.assert_allclose(data[0]["position"], [1, 0])
+    np.testing.assert_allclose(data[0]["velocity"], [0, 2])
+
+    assert data[1]["name"] == "Mars"
+    assert data[1]["mass"] == pytest.approx(0.5)
+    np.testing.assert_allclose(data[1]["position"], [2, 0])
+    np.testing.assert_allclose(data[1]["velocity"], [0, 1])
+
+
+def test_builder_body_data_is_independent():
+    builder = SystemBuilder(dimensions=2)
+    builder.add_body("Earth", 1.0, [1, 0], [0, 2])
+
+    data = builder.body_data
+    data[0]["position"][0] = 100.0
+    data[0]["velocity"][1] = 100.0
+    data[0]["name"] = "Modified"
+    data[0]["mass"] = 100.0
+
+    state = builder.build()
+
+    assert state.names == ("Earth",)
+    np.testing.assert_allclose(state.masses, [1.0])
+    np.testing.assert_allclose(state.positions, [[1, 0]])
+    np.testing.assert_allclose(state.velocities, [[0, 2]])

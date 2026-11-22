@@ -45,6 +45,19 @@ class SystemBuilder:
         """Return independent copies of body velocities."""
         return tuple(velocity.copy() for velocity in self._velocities)
 
+    @property
+    def body_data(self) -> tuple[dict, ...]:
+        """Return independent data for all bodies in the system."""
+        return tuple(
+            {
+                "name": body.name,
+                "mass": body.mass,
+                "position": body.position.copy(),
+                "velocity": velocity.copy(),
+            }
+            for body, velocity in zip(self._bodies, self._velocities)
+        )
+
     def add_body(
         self,
         name: str,
