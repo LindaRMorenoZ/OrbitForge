@@ -42,6 +42,42 @@ class Experiment:
         self._analysis: SimulationAnalysis | None = None
         self._metrics: ConservationMetrics | None = None
 
+    @classmethod
+    def from_configuration(
+        cls,
+        configuration,
+        name: str | None = None,
+    ) -> "Experiment":
+        """Create an experiment from a reusable configuration."""
+
+        from .configuration import ExperimentConfiguration
+
+        if not isinstance(configuration, ExperimentConfiguration):
+            raise TypeError(
+                "configuration must be an ExperimentConfiguration."
+            )
+
+        experiment_name = configuration.name if name is None else name
+
+        if not isinstance(experiment_name, str) or not experiment_name.strip():
+            raise ValueError("Experiment name must be a non-empty string.")
+
+        experiment = cls.__new__(cls)
+
+        experiment._name = experiment_name.strip()
+        experiment._config = configuration.config
+        experiment._gravitational_constant = (
+            configuration.gravitational_constant
+        )
+        experiment._softening = configuration.softening
+        experiment._initial_state = configuration.initial_state.copy()
+
+        experiment._result = None
+        experiment._analysis = None
+        experiment._metrics = None
+
+        return experiment
+
     @property
     def analysis(self) -> SimulationAnalysis | None:
         return self._analysis
