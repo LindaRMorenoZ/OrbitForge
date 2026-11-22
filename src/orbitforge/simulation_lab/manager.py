@@ -1,6 +1,6 @@
 """Management of interactive experiment sessions."""
 
-from orbitforge.experiments import Experiment
+from orbitforge.experiments import Experiment, ExperimentConfiguration
 from orbitforge.simulation_lab.session import SimulationSession
 
 
@@ -31,6 +31,20 @@ class ExperimentManager:
         self._sessions[name] = session
 
         return session
+
+    def create_session_from_configuration(
+        self,
+        configuration: ExperimentConfiguration,
+    ) -> SimulationSession:
+        """Create and register a session from a reusable configuration."""
+
+        if not isinstance(configuration, ExperimentConfiguration):
+            raise TypeError(
+                "configuration must be an ExperimentConfiguration instance"
+            )
+
+        experiment = configuration.create_experiment()
+        return self.create_session(experiment)
 
     def get_session(self, name: str) -> SimulationSession:
         """Retrieve a session by experiment name."""

@@ -2,7 +2,7 @@ import pytest
 
 from orbitforge.builder import SystemBuilder
 from orbitforge.config import SimulationConfig
-from orbitforge.experiments import Experiment
+from orbitforge.experiments import Experiment, ExperimentConfiguration
 from orbitforge.simulation_lab.manager import ExperimentManager
 from orbitforge.simulation_lab.session import SimulationSession
 
@@ -49,6 +49,7 @@ def test_manager_retrieves_session(small_experiment):
 
     assert retrieved is session
 
+
 def test_manager_rejects_invalid_experiment():
     manager = ExperimentManager()
 
@@ -87,12 +88,31 @@ def test_manager_removes_session(small_experiment):
     assert removed is session
     assert manager.sessions == {}
 
+@pytest.fixture
+def small_configuration():
+    builder = SystemBuilder()
+    builder.add_body(
+        name="Configured body",
+        mass=1.0,
+        position=[0.0, 0.0],
+        velocity=[1.0, 0.0],
+    )
+
+    config = SimulationConfig(total_time=0.1, dt=0.01)
+
+    return ExperimentConfiguration.from_builder(
+        name="Configured experiment",
+        builder=builder,
+        config=config,
+    )
+
 
 def test_manager_raises_when_removing_unknown_session():
     manager = ExperimentManager()
 
     with pytest.raises(KeyError):
         manager.remove_session("Unknown experiment")
+
 
 def test_manager_keeps_multiple_sessions_independent():
     manager = ExperimentManager()
@@ -127,3 +147,29 @@ def test_manager_keeps_multiple_sessions_independent():
     assert session_a.current_state.time > 0.0
     assert session_b.current_state.time == 0.0
     assert session_b.status.name == "READY"
+
+
+def test_manager_creates_session_from_configuration(small_configuration):
+    manager = ExperimentManager()
+
+    session = manager.create_session_from_configuration(small_configuration)
+
+    assert isinstance(session, SimulationSession)
+    assert manager.sessions["Configured experiment"] is session
+
+
+def test_manager_rejects_invalid_configuration():
+    manager = ExperimentManager()
+
+    with pytest.raises(TypeError):
+        manager.create_session_from_configuration("not a configuration")
+
+
+def test_manager_rejects_duplicate_configuration_names(small_configuration):
+    manager = ExperimentManager()
+    experiment = small_configuration.create_experiment()
+
+    manager.create_session(experiment)
+
+    with pytest.raises(ValueError):
+        manager.create_session_from_configuration(small_configuration)
