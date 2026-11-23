@@ -1,4 +1,3 @@
-
 """Interactive simulation lab."""
 
 from orbitforge.recommendations import (
@@ -20,4 +19,21 @@ __all__ = [
     "SimulationRecommender",
     "SimulationSession",
     "apply_recommendations",
+    "visualize_interactive_session",
 ]
+
+
+def visualize_interactive_session(
+    session,
+    *,
+    interval: int = 30,
+    steps_per_frame: int = 10,
+):
+    """Open an interactive viewer for an existing simulation session."""
+    from .visualization import visualize_interactive_session as visualize
+
+    return visualize(
+        session,
+        interval=interval,
+        steps_per_frame=steps_per_frame,
+    )
