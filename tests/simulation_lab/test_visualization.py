@@ -17,6 +17,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from orbitforge.builder import SystemBuilder
 from orbitforge.config import SimulationConfig
 from orbitforge.experiments import Experiment
+from orbitforge.simulation_lab import (
+    ExperimentManager,
+    visualize_interactive_session,
+)
 from orbitforge.simulation_lab.session import SimulationSession
 from orbitforge.simulation_lab.visualization import (
     InteractiveSimulationViewer,
@@ -315,3 +319,27 @@ def test_interactive_viewer_show_rejects_second_initialization(
         viewer.show()
 
     plt.close(viewer.figure)
+
+
+def test_manager_session_can_be_visualized_without_duplication(
+    small_session,
+    monkeypatch,
+):
+    experiment = small_session._experiment
+
+    manager = ExperimentManager()
+    session = manager.create_session(experiment)
+
+    monkeypatch.setattr(
+        InteractiveSimulationViewer,
+        "show",
+        lambda self: None,
+    )
+
+    viewer = visualize_interactive_session(
+        manager.get_session(experiment.name)
+    )
+
+    assert viewer.session is session
+    assert viewer.session.controller is session.controller
+    assert len(manager.sessions) == 1
